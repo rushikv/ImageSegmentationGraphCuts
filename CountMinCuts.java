@@ -21,7 +21,7 @@ class Node
     Node right = null;
     Node leftFace = null;
     Node rightFace = null;
-    ArrayList<Node> edges = new ArrayList<>();
+    ArrayList<Node> edges = new ArrayList<Node>();
     int edgeNo = 0;
     int[] edgeVertices;
 
@@ -159,8 +159,8 @@ class adj_list
     }
 
     ArrayList<Integer> createFace(ArrayList<Integer> SList, int vertex){
-        ArrayList<Integer> newVertices = new ArrayList<>();
-        ArrayList<Node> newVs = new ArrayList<>();
+        ArrayList<Integer> newVertices = new ArrayList<Integer>();
+        ArrayList<Node> newVs = new ArrayList<Node>();
         int ctr = 0;
         int S_next, S_prev, i_next, i_prev;
 
@@ -345,7 +345,7 @@ class adj_list
         list.get(firstV.id).add(previous);
         for(int z=0; z<SList.size(); z++) {
             int S = SList.get(z);
-            list.set(S, new ArrayList<>());
+            list.set(S, new ArrayList<Node>());
         }
         num+=newVs.size();
 
@@ -371,14 +371,14 @@ class adj_list
 
     void dual(adj_list Dual){
         int count = 0;
-        ArrayList<Node> faceList = new ArrayList<>();
+        ArrayList<Node> faceList = new ArrayList<Node>();
 
         for(int currVKey = 0; currVKey<num; currVKey++){
             ArrayList<Node> Es = list.get(currVKey);
             for (Node currEdge:Es) {
                 Node currNode = currEdge;
                 boolean broke = false;
-                ArrayList<Node> faceEdges = new ArrayList<>();
+                ArrayList<Node> faceEdges = new ArrayList<Node>();
                 faceEdges.add(currNode);
                 int s = 0;
                 int t = 0;
@@ -509,7 +509,7 @@ public class CountMinCuts {
 
     public static ArrayList<Integer[]> RMSP(adj_list Dual, ArrayList<ArrayList<Integer[]>> DijTree, int source, int dest){
         Integer[] IntArr_2;
-        ArrayList<Integer[]> RMPath = new ArrayList<>();
+        ArrayList<Integer[]> RMPath = new ArrayList<Integer[]>();
         Integer[] IntArr = {source,Dual.list.get(DijTree.get(source).get(0)[0]).get(DijTree.get(source).get(0)[1]).ptr.edgeNo};
         RMPath.add(IntArr);
 
@@ -535,7 +535,7 @@ public class CountMinCuts {
 
     public static ArrayList<Integer[]> LMSP(adj_list Dual, ArrayList<ArrayList<Integer[]>> DijTree, int source, int dest){
         Integer[] IntArr_2;
-        ArrayList<Integer[]> LMPath = new ArrayList<>();
+        ArrayList<Integer[]> LMPath = new ArrayList<Integer[]>();
         Integer[] IntArr = {source,Dual.list.get(DijTree.get(source).get(0)[0]).get(DijTree.get(source).get(0)[1]).ptr.edgeNo};
         LMPath.add(IntArr);
 
@@ -627,7 +627,7 @@ public class CountMinCuts {
 
     public static ArrayList<Integer[]> probPath(ArrayList<ArrayList<Integer[]>> path, double[] count, int initial, int dest){
         int curr = initial;
-        ArrayList<Integer[]> chosenPath = new ArrayList<>();
+        ArrayList<Integer[]> chosenPath = new ArrayList<Integer[]>();
 
         while(curr!=dest){
             if(path.get(curr).size() == 1){
@@ -687,8 +687,8 @@ public class CountMinCuts {
         int lastEnd = -1;
 
 
-        ArrayList<DijRetObj> shortestDijObjs = new ArrayList<>();
-        ArrayList<Double> chosenCounts = new ArrayList<>();
+        ArrayList<DijRetObj> shortestDijObjs = new ArrayList<DijRetObj>();
+        ArrayList<Double> chosenCounts = new ArrayList<Double>();
 
         int perc[] = new int[]{0, 25,50,75,100};
         int percI = 0;
@@ -734,9 +734,9 @@ public class CountMinCuts {
                     lastEnd = i - 1;
                 }
                 else{
-                    shortestDijObjs = new ArrayList<>();
+                    shortestDijObjs = new ArrayList<DijRetObj>();
                     shortestDijObjs.add(currDijResult);
-                    chosenCounts = new ArrayList<>();
+                    chosenCounts = new ArrayList<Double>();
                     chosenCounts.add(count[rightMostPath.get(i)[0]]);
                 }
             }
@@ -745,14 +745,14 @@ public class CountMinCuts {
 
         System.out.println("Count: "+minCount);
 
-        ArrayList<int[][]> returnResult = new ArrayList<>();
+        ArrayList<int[][]> returnResult = new ArrayList<int[][]>();
         ArrayList<Integer[]> finalPath;
         ArrayList<ArrayList<Integer[]>> finalPath_List;
 
         System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++===");
         if(minCount>1) {
             if(samples==0) {
-                finalPath_List = new ArrayList<>();
+                finalPath_List = new ArrayList<ArrayList<Integer[]>>();
                 finalPath_List.add(LMSP(Dual, firstObj.path, rightMostPath.get(firstStart)[0], newNodes[firstEnd]));
                 finalPath_List.add(RMSP(Dual, lastObj.path, rightMostPath.get(lastStart)[0], newNodes[lastEnd]));
                 int[][] planarPath_1 = new int[finalPath_List.get(0).size()][2];
@@ -920,9 +920,9 @@ public class CountMinCuts {
         G.insertVertex(8, new int[]{0,1,6,5}, new double[]{2.0, 1.0, 1.0, 1.0}, false, new int[0][0]);
         G.insertVertex(9, new int[]{7,2,3,4}, new double[]{1.0, 2.0, 3.0, 1.0}, false, new int[0][0]);
 
-        ArrayList<Integer> S = new ArrayList<>(){};
+        ArrayList<Integer> S = new ArrayList<Integer>(){};
         S.add(8);
-        ArrayList<Integer> T = new ArrayList<>(){};
+        ArrayList<Integer> T = new ArrayList<Integer>(){};
         T.add(9);
         countCuts(G,S,T,0);
     }

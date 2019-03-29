@@ -22,7 +22,6 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 
 
-
 public class UI extends JPanel implements MouseListener, MouseMotionListener{
     int mouse_x, mouse_y, x,y;
     static int x_prev = -1;
@@ -33,12 +32,12 @@ public class UI extends JPanel implements MouseListener, MouseMotionListener{
     String imgFile;
     static int count=0;
     static adj_list G;
-    static ArrayList<Integer> S = new ArrayList<>(){};
-    static ArrayList<Integer> T = new ArrayList<>(){};
+    static ArrayList<Integer> S = new ArrayList<Integer>(){};
+    static ArrayList<Integer> T = new ArrayList<Integer>(){};
     boolean scrib_s, scrib_t;
-    Menu menu;
-    Menu menu2;
-    Menu menu3;
+    Menu menu_scribble;
+    Menu menu_filter;
+    Menu menu_compute;
     static ArrayList<int[][]> finalCuts;
     static int type, samples;
     static int pixCounts[][];
@@ -69,33 +68,26 @@ public class UI extends JPanel implements MouseListener, MouseMotionListener{
         {
             public void run()
             {
-                new UI();
-
+                new UI(args[0]);
             }
         });
     }
 
-    public UI() {
+    public UI(String imgfileName) {
         try{
-            initialize();
+            initialize(imgfileName);
         }
         catch(Exception e){
             e.printStackTrace();
         }
     }
 
-    private void initialize(){
-        loadImage();
+    private void initialize(String imgfileName){
+        loadImage(imgfileName);
     }
 
-    public void loadImage() {
-//        imgFile = "295087.jpg";
-//        imgFile = "imgs/118.jpg";
-//        imgFile = "test_img3.png";
-//        imgFile = "testsame2.png";
-//        imgFile = "oscartest.png";
-//        imgFile = "test10x10.png";
-        imgFile = "perf_1200x1200.jpg";
+    public void loadImage(String imgfileName) {
+        imgFile = imgfileName;
         try {
             image = ImageIO.read(new File(imgFile));
             imageOG = ImageIO.read(new File(imgFile));
@@ -114,29 +106,29 @@ public class UI extends JPanel implements MouseListener, MouseMotionListener{
         f.setResizable(false);
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         MenuBar menuBar = new MenuBar();
-        menu = new Menu("Scribble");
-        menu.add("Draw_S");
-        menu.add("Draw_T");
-        menu.getItem(1).setEnabled(false);
+        menu_scribble = new Menu("Scribble");
+        menu_scribble.add("Draw_S");
+        menu_scribble.add("Draw_T");
+        menu_scribble.getItem(1).setEnabled(false);
 
-        menu3 = new Menu("Compute");
-        menu3.add("Left_Right_Most");
-        menu3.add("Prob_Sample");
-        menu3.setEnabled(false);
+        menu_compute = new Menu("Compute");
+        menu_compute.add("Left_Right_Most");
+        menu_compute.add("Prob_Sample");
+        menu_compute.setEnabled(false);
 
-        menu2 = new Menu("Filter");
-        menu2.add("Grayscale");
-        menu2.add("RGB");
-        menu2.setEnabled(false);
+        menu_filter = new Menu("Filter");
+        menu_filter.add("Grayscale");
+        menu_filter.add("RGB");
+        menu_filter.setEnabled(false);
 
         count = 0;
-        menuBar.add(menu);
-        menuBar.add(menu3);
-        menuBar.add(menu2);
+        menuBar.add(menu_scribble);
+        menuBar.add(menu_compute);
+        menuBar.add(menu_filter);
 
-        menu.addActionListener(new axnListener());
-        menu2.addActionListener(new axnListener2());
-        menu3.addActionListener(new axnListener3());
+        menu_scribble.addActionListener(new axnListener());
+        menu_filter.addActionListener(new axnListener2());
+        menu_compute.addActionListener(new axnListener3());
         f.setMenuBar(menuBar);
     }
 
@@ -146,11 +138,10 @@ public class UI extends JPanel implements MouseListener, MouseMotionListener{
                 scrib_s = true;
                 scrib_t = false;
                 count++;
-                menu.getItem(0).setEnabled(false);
-                menu.getItem(1).setEnabled(true);
-                menu3.setEnabled(false);
-                menu2.setEnabled(false);
-
+                menu_scribble.getItem(0).setEnabled(false);
+                menu_scribble.getItem(1).setEnabled(true);
+                menu_compute.setEnabled(false);
+                menu_filter.setEnabled(false);
             }
             if(e.getActionCommand().equalsIgnoreCase("Draw_T")){
                 scrib_t = true;
@@ -158,9 +149,9 @@ public class UI extends JPanel implements MouseListener, MouseMotionListener{
                 x_prev = -1;
                 y_prev = -1;
                 count++;
-                menu.setEnabled(false);
-                menu3.setEnabled(true);
-                menu2.setEnabled(false);
+                menu_scribble.setEnabled(false);
+                menu_compute.setEnabled(true);
+                menu_filter.setEnabled(false);
 
             }
         }
@@ -254,16 +245,13 @@ public class UI extends JPanel implements MouseListener, MouseMotionListener{
             if(e.getActionCommand().equalsIgnoreCase("Left_Right_Most")){
 
                 type = 0;
-                menu2.setEnabled(true);
-                menu.setEnabled(false);
+                menu_filter.setEnabled(true);
+                menu_scribble.setEnabled(false);
 
 
                 count++;
                 scrib_s = false;
                 scrib_t = false;
-
-//                S.add(vertexNo(25,19));
-//                T.add(vertexNo(17,19));
 
                 System.out.print("Source S: [");
                 for(int ss=0;ss<S.size();ss++){
@@ -315,15 +303,12 @@ public class UI extends JPanel implements MouseListener, MouseMotionListener{
 
                 type = 1;
 
-                menu2.setEnabled(true);
-                menu.setEnabled(false);
+                menu_filter.setEnabled(true);
+                menu_scribble.setEnabled(false);
 
                 count++;
                 scrib_s = false;
                 scrib_t = false;
-
-//                S.add(vertexNo(25,19));
-//                T.add(vertexNo(17,19));
 
                 System.out.print("Source S: [");
                 for(int ss=0;ss<S.size();ss++){
@@ -398,15 +383,6 @@ public class UI extends JPanel implements MouseListener, MouseMotionListener{
         return new int[]{red,green,blue};
     }
 
-//    public int RGBAValue(int red, int green, int blue, int alpha){
-//        int r = red & 0xFF;
-//        int g = green & 0xFF;
-//        int b = blue & 0xFF;
-//        int a = alpha & 0xFF;
-//
-//        return (r << 24) + (g << 16) + (b << 8) + (a);
-//    }
-
     public int vertexNo(int i,int j) {
         return ((image.getHeight() * i) + j);
     }
@@ -416,28 +392,30 @@ public class UI extends JPanel implements MouseListener, MouseMotionListener{
     }
 
     public double luminence(int[] rgb) {
-//        return ((double)rgb[0]+rgb[1]+rgb[2])/3; // 1
-//        return ((double)Math.max(Math.max(rgb[0],rgb[1]),rgb[2])+Math.min(Math.min(rgb[0],rgb[1]),rgb[2]))/2; // 2
-//        return Math.max(Math.max(rgb[0],rgb[1]),rgb[2]); // 3
-//        return Math.min(Math.min(rgb[0],rgb[1]),rgb[2]); // 4
-//        int numShades= 100;
-//        return ((int)(((double)rgb[0]+rgb[1]+rgb[2])/3 / (255 / ((double)numShades - 1))) + 0.5) * (255 / ((double)numShades - 1)); // 5
+        // Different intensity formulas
+        // return ((double)rgb[0]+rgb[1]+rgb[2])/3;
+        // return ((double)Math.max(Math.max(rgb[0],rgb[1]),rgb[2])+Math.min(Math.min(rgb[0],rgb[1]),rgb[2]))/2;
+        // return Math.max(Math.max(rgb[0],rgb[1]),rgb[2]);
+        // return Math.min(Math.min(rgb[0],rgb[1]),rgb[2]);
+        // int numShades= 100;
+        // return ((int)(((double)rgb[0]+rgb[1]+rgb[2])/3 / (255 / ((double)numShades - 1))) + 0.5) * (255 / ((double)numShades - 1));
         return (0.2126 * rgb[0]) + (0.7152 * rgb[1]) + (0.0722 * rgb[2]); // 6
     }
 
     public double intensity(double diff) {
-//        return Math.exp(-(diff))*Math.pow(10,22);
-//        return Math.exp(-(Math.pow(diff,2)));
+        // Different intensity formulas
+        // return Math.exp(-(diff))*Math.pow(10,22);
+        // return Math.exp(-(Math.pow(diff,2)));
+        // return (256-diff);
+        // return Math.pow((255-diff),8)+1;
+        // return 1/Math.pow(diff+1,2);
+        // return (Math.pow(((1 / (diff + 1)) * 1000), 4)* image.getWidth() * image.getHeight());
+        // return Math.exp(-1*Math.sqrt(Math.pow(diff,3)));
+        // return Math.exp(-1*diff);
+        // return Math.exp(-(Math.pow(Math.sqrt(),2)/Math.pow(1,2)))
+        // return Math.exp(-(Math.pow(Math.sqrt(diff),2)));
+        return (Math.pow(((1 / (diff + 1)) * 1000), 8)* Math.pow(image.getWidth(),10) * Math.pow(image.getHeight(),10));
 
-//        return (256-diff); // 3
-//        return Math.pow((255-diff),8)+1; // 4
-//        return 1/Math.pow(diff+1,2); // 5
-//        return (Math.pow(((1 / (diff + 1)) * 1000), 4)* image.getWidth() * image.getHeight()); // 6
-        return (Math.pow(((1 / (diff + 1)) * 1000), 8)* Math.pow(image.getWidth(),10) * Math.pow(image.getHeight(),10)); // 7
-//        return Math.exp(-1*Math.sqrt(Math.pow(diff,3)));
-//        return Math.exp(-1*diff);
-//        return Math.exp(-(Math.pow(Math.sqrt(),2)/Math.pow(1,2)))
-//        return Math.exp(-(Math.pow(Math.sqrt(diff),2)));
     }
 
     public int RGBInt(int avg){
@@ -446,7 +424,7 @@ public class UI extends JPanel implements MouseListener, MouseMotionListener{
 
     public ArrayList<Integer[]> findLine(int x0, int y0, int x1, int y1)
     {
-        ArrayList<Integer[]> line = new ArrayList<>();
+        ArrayList<Integer[]> line = new ArrayList<Integer[]>();
 
         int dx = Math.abs(x1 - x0);
         int dy = Math.abs(y1 - y0);
@@ -573,13 +551,6 @@ public class UI extends JPanel implements MouseListener, MouseMotionListener{
                     }
                 }
                 System.out.println("No. of vertices: "+G.num);
-
-
-//                for(int i =0;i<grayScale.length;i++){
-//                    for(int j=0;j<grayScale[0].length;j++){
-//                        image.setRGB(i,j,grayScale[i][j]);
-//                    }
-//                }
 
                 x_prev = e.getX();
                 y_prev = e.getY();
